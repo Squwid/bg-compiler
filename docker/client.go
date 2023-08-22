@@ -1,0 +1,139 @@
+package docker
+
+import (
+	"context"
+	"io"
+	"os"
+
+	"github.com/Squwid/bg-compiler/flags"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
+	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/api/types/strslice"
+	"github.com/docker/docker/client"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+)
+
+var Client DockerClient
+
+type DockerClient interface {
+	CreateContainer(context.Context, *CreateContainerInput) (string, error)
+
+	StartContainer(context.Context, string) (io.ReadCloser, error)
+
+	KillContainer(context.Context, string) (bool, error)
+}
+
+type CreateContainerInput struct {
+	ID          string // ID of the JobDefinition.
+	FullCommand string // Full command. Ex. "python3 main.py", "go run main.go"
+	Mounts      []mount.Mount
+	Image       string // Docker image (must be available on host)
+}
+
+type dclient struct {
+	docker *client.Client
+}
+
+var (
+	targetArc     = os.Getenv("TARGET_ARCH")
+	targetOS      = os.Getenv("TARGET_OS")
+	targetVariant = os.Getenv("TARGET_VARIANT") // v8 for rpi.
+)
+
+func Init() {
+	if targetArc == "" {
+		logrus.Warnf("'TARGET_ARCH' empty, defaulting to 'amd64'")
+		targetArc = "amd64"
+	}
+	if targetOS == "" {
+		logrus.Warnf("'TARGET_OS' empty, defaulting to 'linux'")
+		targetOS = "linux"
+	}
+
+	c, err := client.NewClientWithOpts(client.FromEnv,
+		client.WithAPIVersionNegotiation())
+	if err != nil {
+		logrus.WithError(err).Fatalf("Error creating docker client")
+	}
+
+	Client = &dclient{docker: c}
+}
+
+func (c *dclient) CreateContainer(ctx context.Context, input *CreateContainerInput) (string, error) {
+	resp, err := c.docker.ContainerCreate(ctx,
+		&container.Config{
+			OpenStdin:       true,
+			Tty:             false,
+			AttachStdin:     true,
+			AttachStdout:    true,
+			Image:           input.Image,
+			NetworkDisabled: true,
+			Cmd: strslice.StrSlice{
+				"/bin/sh", "-c", input.FullCommand,
+			},
+			WorkingDir: "/bg",
+		},
+		&container.HostConfig{
+			Runtime: "runsc", // gvisor
+			Mounts:  input.Mounts,
+			LogConfig: container.LogConfig{
+				Type: "json-file",
+				Config: map[string]string{
+					"mode": "non-blocking",
+				},
+			},
+			AutoRemove: true,
+			Resources: container.Resources{
+				CPUShares: flags.ContainerMaxCPU(),
+				Memory:    flags.ContainerMaxMemory(),
+			},
+		},
+		&network.NetworkingConfig{},
+		&v1.Platform{
+			Architecture: targetArc,
+			OS:           targetOS,
+			Variant:      targetVariant,
+		},
+		input.ID)
+	if err != nil {
+		return "", err
+	}
+	return resp.ID, nil
+}
+
+// StartContainer starts a container and returns a ReadCloser to the logs.
+// They still need to be multiplexed between stdout and stderr.
+func (c *dclient) StartContainer(ctx context.Context, id string) (io.ReadCloser, error) {
+	if err := c.docker.ContainerStart(ctx, id, types.ContainerStartOptions{}); err != nil {
+		return nil, err
+	}
+
+	logs, err := c.docker.ContainerLogs(context.Background(), id, types.ContainerLogsOptions{
+		Timestamps: false,
+		Follow:     true,
+		ShowStdout: true,
+		ShowStderr: true,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return logs, nil
+}
+
+// KillContainer returns a bool whether the container was running or not (indicating a timeout)
+// as well as the error.
+func (c *dclient) KillContainer(ctx context.Context, id string) (bool, error) {
+	status, err := c.docker.ContainerInspect(ctx, id)
+	if err != nil {
+		return false, errors.Wrapf(err, "Error inspecting container")
+	}
+	if !status.State.Running {
+		return false, nil
+	}
+	return true, c.docker.ContainerKill(ctx, id, "SIGKILL")
+}
