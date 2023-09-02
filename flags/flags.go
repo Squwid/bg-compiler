@@ -1,4 +1,4 @@
-// Flags is a package defined to control global variables
+// Flags is a package defined to configure global variables
 // that are effect the control of the program.
 package flags
 
@@ -24,12 +24,6 @@ func ContainerMaxDuration() time.Duration {
 // This number needs to be larger than amount of
 func JobChannelLength() int {
 	return 2000
-}
-
-// The amount of bytes that we can have fetched from PubSub before we stop
-// accepting new payloads from the queue.
-func PubSubMaxOutstandingBytes() int {
-	return -1 // -1 == unlimited.
 }
 
 // ContainerMaxMemory is the maximum amount of memory that a container can use
