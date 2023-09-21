@@ -78,8 +78,7 @@ func (c *dclient) CreateContainer(ctx context.Context, input *CreateContainerInp
 			WorkingDir: "/bg",
 		},
 		&container.HostConfig{
-			Runtime: "runsc", // gvisor
-			Mounts:  input.Mounts,
+			Mounts: input.Mounts,
 			LogConfig: container.LogConfig{
 				Type: "json-file",
 				Config: map[string]string{
