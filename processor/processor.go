@@ -5,12 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Squwid/bg-compiler/entry"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
-func ProcessSubmission(ctx context.Context, sub *entry.Submission) error {
+func ProcessSubmission(ctx context.Context, sub *Submission) error {
 	logger := logrus.WithFields(logrus.Fields{
 		"Action": "Process",
 	})
@@ -33,5 +32,4 @@ func ProcessSubmission(ctx context.Context, sub *entry.Submission) error {
 	fmt.Println(string(bs))
 
 	return nil
-
 }

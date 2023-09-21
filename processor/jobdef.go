@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/Squwid/bg-compiler/entry"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -21,7 +20,7 @@ type definition struct {
 	id string
 
 	Jobs       []*Job
-	Submission *entry.Submission
+	Submission *Submission
 
 	hostTmpDir         string
 	hostInputFile      string
@@ -35,7 +34,7 @@ type definition struct {
 // NewDefinition takes a job definition and writes its files
 // to a tempdir on the host. It also generates all of the jobs that
 // need to be run.
-func NewDefinition(ctx context.Context, sub *entry.Submission) (*definition, error) {
+func NewDefinition(ctx context.Context, sub *Submission) (*definition, error) {
 	var d = &definition{
 		id:         uuid.New().String(),
 		Submission: sub,
@@ -76,7 +75,7 @@ func (d *definition) WriteFiles() error {
 		f.Close()
 	}
 
-	// TODO: Does the filke extension need to be dynamic?
+	// TODO: Does the file extension need to be dynamic?
 	d.hostSourceCodeFile = filepath.Join(d.hostTmpDir, "main.ext")
 	f, err := os.Create(d.hostSourceCodeFile)
 	if err != nil {

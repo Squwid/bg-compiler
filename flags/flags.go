@@ -7,29 +7,38 @@ import (
 	"time"
 )
 
+// Overrides for FlagConfig based on flag values from the command line.
+var FlagConfig *FlagConfiguration = &FlagConfiguration{
+	// Use all available threads minus 2 for pre/post-processing.
+	WorkerCount:             max(runtime.GOMAXPROCS(0)-2, 2),
+	ContainerTimeoutSeconds: 30,
+	JobChannelLength:        2000,
+	ContainerMaxMemoryMB:    512, // 512MB
+	MaxReadOutputBytesKB:    30,  // 30KB
+}
+
 // WorkerCount returns the number of workers to use for
 // processing jobs.
 func WorkerCount() int {
-	// We want to use all available threads minus 2 for pre-processing.
-	return max(runtime.GOMAXPROCS(0)-2, 2)
+	return FlagConfig.WorkerCount
 }
 
 // ContainerMaxDuration is the maximum amount of time that a container can run
 // before being killed.
 func ContainerMaxDuration() time.Duration {
-	return 30 * time.Second
+	return time.Duration(FlagConfig.ContainerTimeoutSeconds) * time.Second
 }
 
 // JobChannelLength returns the length of the job channel.
 // This number needs to be larger than amount of
 func JobChannelLength() int {
-	return 2000
+	return FlagConfig.JobChannelLength
 }
 
 // ContainerMaxMemory is the maximum amount of memory that a container can use
 // for a single run.
 func ContainerMaxMemory() int64 {
-	return 512 * 1024 * 1024 // 512MB
+	return FlagConfig.ContainerMaxMemoryMB * 1024 * 1024
 }
 
 // ContainerMaxCPU is the maximum amount of CPU that a container can use for a
@@ -43,5 +52,9 @@ func ContainerMaxCPU() int64 {
 //
 // The largest API call output should be approximately this * MaxBatchCompiles.
 func MaxReadOutputBytes() int {
-	return 1024 * 30
+	return FlagConfig.MaxReadOutputBytesKB * 1024
 }
+
+// TODO: List of additional flags that should be added at some point:
+//     - ShouldKillWhenOutputFull
+//     - EnforceTimeout
