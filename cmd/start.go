@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/Squwid/bg-compiler/docker"
 	"github.com/Squwid/bg-compiler/processor"
+	"github.com/Squwid/bg-compiler/webserver"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -23,5 +23,7 @@ func startCmd(cmd *cobra.Command, args []string) {
 	docker.Init()
 	processor.InitWorkers()
 
-	fmt.Println("Start server!")
+	// TODO: Make port configurable.
+	server := webserver.NewServer(8080)
+	logrus.WithError(server.Start()).Fatalln("Error starting server")
 }

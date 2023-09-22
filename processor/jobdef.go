@@ -61,6 +61,10 @@ func (d *definition) WriteFiles() error {
 		return err
 	}
 
+	if d.Submission.Extension == "" {
+		d.Submission.Extension = "ext"
+	}
+
 	if d.Submission.Input != nil {
 		d.hostInputFile = filepath.Join(d.hostTmpDir, "input.txt")
 		f, err := os.Create(d.hostInputFile)
@@ -75,8 +79,7 @@ func (d *definition) WriteFiles() error {
 		f.Close()
 	}
 
-	// TODO: Does the file extension need to be dynamic?
-	d.hostSourceCodeFile = filepath.Join(d.hostTmpDir, "main.ext")
+	d.hostSourceCodeFile = filepath.Join(d.hostTmpDir, fmt.Sprintf("main.%s", d.Submission.Extension))
 	f, err := os.Create(d.hostSourceCodeFile)
 	if err != nil {
 		return errors.Wrap(err, "Failed to create source code file")

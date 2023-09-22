@@ -7,10 +7,7 @@ type Submission struct {
 	Input  *string `json:"input"` // Text input to write to a file.
 
 	Cmd string `json:"cmd"` // Command to run the script.
-}
 
-type Result struct {
-	StdOut   string `json:"std_out"`
-	StdErr   string `json:"std_err"`
-	TimedOut bool   `json:"timed_out"`
+	// File extension of the script. Defaults to .ext if not present
+	Extension string `json:"extension"`
 }

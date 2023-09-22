@@ -27,10 +27,18 @@ func compileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := processor.ProcessSubmission(context.Background(), sub); err != nil {
-		logrus.WithError(err).Errorf("Error processing submission")
+	outputs, err := processor.ProcessSubmission(context.Background(), sub)
+	if err != nil {
+		logger.WithError(err).Errorf("Error processing submission")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	bs, err = json.MarshalIndent(outputs, "", "  ")
+	if err != nil {
+		logger.WithError(err).Errorf("Error marshalling outputs")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(bs)
 }

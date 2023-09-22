@@ -36,10 +36,10 @@ type Job struct {
 type JobOutput struct {
 	Job *Job `json:"-"`
 
-	StdOut   string
-	StdErr   string
-	Duration int64
-	TimedOut bool
+	StdOut   string `json:"stdout"`
+	StdErr   string `json:"stderr"`
+	Duration int64  `json:"duration_ms"`
+	TimedOut bool   `json:"timed_out"`
 }
 
 func (job *Job) Start() error {
