@@ -43,6 +43,7 @@ Usage:
 | `--output` | 30 | Number of bytes that can be read from a container output before the container is killed (in KB). |
 | `--timeout` | 30 | Container timeout in seconds. |
 | `--workers` | 4 | Number of concurrent workers. |
+| `--port` | 8080 | Port to run the compiler on. |
 
 
 ### HTTP Calls
@@ -116,10 +117,10 @@ docker pull oven/bun:1.0
 #### Step 2: Start the Compiler
 
 Start the compiler with 2 workers and a 30 second timeout. Each of the workers 
-will run in a container with 512MB of memory and a 1KB output limit.
+will run in a container with 512MB of memory and a 1KB output limit on port 8000.
 
 ```sh
-bg-compiler start --workers 2 --timeout 30 --memory 512 --output 1
+bg-compiler start --workers 2 --timeout 30 --memory 512 --output 1 --port 8000
 ```
 
 #### Step 3: Send a Compile Request
@@ -143,7 +144,7 @@ Using cURL, send a compile count of 10 to the server:
 
 ```sh
 curl --request POST \
-  --url http://localhost:8080/compile \
+  --url http://localhost:8000/compile \
   --header 'Content-Type: application/json' \
   --data '{
 	"script": "console.log(\"Hello, world!\");",

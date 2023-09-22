@@ -15,6 +15,7 @@ var FlagConfig *FlagConfiguration = &FlagConfiguration{
 	JobChannelLength:        2000,
 	ContainerMaxMemoryMB:    512, // 512MB
 	MaxReadOutputBytesKB:    30,  // 30KB
+	Port:                    8080,
 }
 
 // WorkerCount returns the number of workers to use for
@@ -53,6 +54,10 @@ func ContainerMaxCPU() int64 {
 // The largest API call output should be approximately this * MaxBatchCompiles.
 func MaxReadOutputBytes() int {
 	return FlagConfig.MaxReadOutputBytesKB * 1024
+}
+
+func Port() int {
+	return FlagConfig.Port
 }
 
 // TODO: List of additional flags that should be added at some point:

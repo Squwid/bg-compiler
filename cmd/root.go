@@ -46,6 +46,10 @@ func init() {
 		"output",
 		flags.FlagConfig.MaxReadOutputBytesKB,
 		"Maximum number of bytes that can be read from a container output before the container is killed (in KB)")
+	cmdStart.Flags().IntVar(&flags.FlagConfig.Port,
+		"port",
+		flags.FlagConfig.Port,
+		"Server port to listen on")
 
 	rootCmd.AddCommand(cmdStart)
 }

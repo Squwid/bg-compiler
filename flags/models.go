@@ -21,4 +21,7 @@ type FlagConfiguration struct {
 	// container is killed.
 	// Defaults to 30KB.
 	MaxReadOutputBytesKB int
+
+	// Server port to listen on.
+	Port int
 }
