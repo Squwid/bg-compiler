@@ -128,7 +128,8 @@ bg-compiler start --workers 2 --timeout 30 --memory 512 --output 1 --port 8000
 Send a compile request to the server. The request will run the code in the
 `oven/bun:1.0` image and print `Hello, world!` to stdout.
 
-Using a [JSON escape tool](https://www.freeformatter.com/json-escape.html#before-output), transform the following code from
+Using a [JSON escape tool](https://www.freeformatter.com/json-escape.html#before-output),
+transform the following code from
 
 ```javascript
 console.log("Hello, world!");
