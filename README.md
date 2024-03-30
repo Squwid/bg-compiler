@@ -40,6 +40,7 @@ Usage:
 |---|---|---|
 | `--backlog`| 2000 | Job backlog before API rejects requests. |
 | `--memory` | 512 | Amount of memory that a container can use for a single run (in MB). |
+| `--cpu` | 1024 | CPU shares for a container. |
 | `--output` | 30 | Number of bytes that can be read from a container output before the container is killed (in KB). |
 | `--timeout` | 30 | Container timeout in seconds. |
 | `--workers` | 4 | Number of concurrent workers. |
