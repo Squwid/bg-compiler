@@ -17,6 +17,10 @@ type FlagConfiguration struct {
 	// Defaults to 512MB.
 	ContainerMaxMemoryMB int64
 
+	// CPU shares for a container.
+	// Defaults to 1024.
+	ContainerCPUShares int64
+
 	// Number of bytes that can be read from a container output before the
 	// container is killed.
 	// Defaults to 30KB.

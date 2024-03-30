@@ -42,6 +42,10 @@ func init() {
 		"memory",
 		flags.FlagConfig.ContainerMaxMemoryMB,
 		"Maximum amount of memory that a container can use for a single run (in MB)")
+	cmdStart.Flags().Int64Var(&flags.FlagConfig.ContainerCPUShares,
+		"cpu",
+		flags.FlagConfig.ContainerCPUShares,
+		"CPU shares for a container")
 	cmdStart.Flags().IntVar(&flags.FlagConfig.MaxReadOutputBytesKB,
 		"output",
 		flags.FlagConfig.MaxReadOutputBytesKB,

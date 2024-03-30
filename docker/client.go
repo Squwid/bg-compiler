@@ -87,7 +87,7 @@ func (c *dclient) CreateContainer(ctx context.Context, input *CreateContainerInp
 			},
 			AutoRemove: true,
 			Resources: container.Resources{
-				CPUShares: flags.ContainerMaxCPU(),
+				CPUShares: flags.ContainerCPUShares(),
 				Memory:    flags.ContainerMaxMemory(),
 			},
 		},

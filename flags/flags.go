@@ -14,7 +14,8 @@ var FlagConfig *FlagConfiguration = &FlagConfiguration{
 	ContainerTimeoutSeconds: 30,
 	JobChannelLength:        2000,
 	ContainerMaxMemoryMB:    512, // 512MB
-	MaxReadOutputBytesKB:    30,  // 30KB
+	ContainerCPUShares:      1024,
+	MaxReadOutputBytesKB:    30, // 30KB
 	Port:                    8080,
 }
 
@@ -44,8 +45,8 @@ func ContainerMaxMemory() int64 {
 
 // ContainerMaxCPU is the maximum amount of CPU that a container can use for a
 // single run.
-func ContainerMaxCPU() int64 {
-	return int64((1 / WorkerCount()) * WorkerCount() * 1024)
+func ContainerCPUShares() int64 {
+	return FlagConfig.ContainerCPUShares
 }
 
 // MaxReadOutputBytes is the maximum number of bytes that can be read from a
