@@ -17,6 +17,7 @@ var FlagConfig *FlagConfiguration = &FlagConfiguration{
 	ContainerCPUShares:      1024,
 	MaxReadOutputBytesKB:    30, // 30KB
 	Port:                    8080,
+	UseGVisor:               false,
 }
 
 // WorkerCount returns the number of workers to use for
@@ -59,6 +60,10 @@ func MaxReadOutputBytes() int {
 
 func Port() int {
 	return FlagConfig.Port
+}
+
+func UseGVisor() bool {
+	return FlagConfig.UseGVisor
 }
 
 // TODO: List of additional flags that should be added at some point:

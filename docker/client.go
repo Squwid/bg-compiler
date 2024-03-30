@@ -64,6 +64,25 @@ func Init() {
 }
 
 func (c *dclient) CreateContainer(ctx context.Context, input *CreateContainerInput) (string, error) {
+	hostConfig := &container.HostConfig{
+		Mounts: input.Mounts,
+		LogConfig: container.LogConfig{
+			Type: "json-file",
+			Config: map[string]string{
+				"mode": "non-blocking",
+			},
+		},
+		AutoRemove: true,
+		Resources: container.Resources{
+			CPUShares: flags.ContainerCPUShares(),
+			Memory:    flags.ContainerMaxMemory(),
+		},
+		Privileged: false,
+	}
+	if flags.UseGVisor() {
+		hostConfig.Runtime = "runsc"
+	}
+
 	resp, err := c.docker.ContainerCreate(ctx,
 		&container.Config{
 			OpenStdin:       true,
@@ -77,20 +96,7 @@ func (c *dclient) CreateContainer(ctx context.Context, input *CreateContainerInp
 			},
 			WorkingDir: "/bg",
 		},
-		&container.HostConfig{
-			Mounts: input.Mounts,
-			LogConfig: container.LogConfig{
-				Type: "json-file",
-				Config: map[string]string{
-					"mode": "non-blocking",
-				},
-			},
-			AutoRemove: true,
-			Resources: container.Resources{
-				CPUShares: flags.ContainerCPUShares(),
-				Memory:    flags.ContainerMaxMemory(),
-			},
-		},
+		hostConfig,
 		&network.NetworkingConfig{},
 		&v1.Platform{
 			Architecture: targetArc,

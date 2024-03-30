@@ -28,4 +28,9 @@ type FlagConfiguration struct {
 
 	// Server port to listen on.
 	Port int
+
+	// UseGVisor is a flag to enable the use of gVisor for container isolation.
+	// runsc needs to be installed on the host machine for this to work.
+	// Defaults to false.
+	UseGVisor bool
 }

@@ -45,7 +45,7 @@ Usage:
 | `--timeout` | 30 | Container timeout in seconds. |
 | `--workers` | 4 | Number of concurrent workers. |
 | `--port` | 8080 | Port to run the compiler on. |
-
+| `--use-gvisor` | false | Use [gVisor](https://gvisor.dev/) for increased container security (requires runsc). |
 
 ### HTTP Calls
 
@@ -121,7 +121,12 @@ Start the compiler with 2 workers and a 30 second timeout. Each of the workers
 will run in a container with 512MB of memory and a 1KB output limit on port 8000.
 
 ```sh
-bg-compiler start --workers 2 --timeout 30 --memory 512 --output 1 --port 8000
+bg-compiler start \
+  --workers 2 \
+  --timeout 30 \
+  --memory 512 \
+  --output 1 \
+  --port 8000
 ```
 
 #### Step 3: Send a Compile Request

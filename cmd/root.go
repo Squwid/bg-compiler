@@ -54,6 +54,10 @@ func init() {
 		"port",
 		flags.FlagConfig.Port,
 		"Server port to listen on")
+	cmdStart.Flags().BoolVar(&flags.FlagConfig.UseGVisor,
+		"gvisor",
+		flags.FlagConfig.UseGVisor,
+		"Use gVisor for increased container isolation (requires runsc).")
 
 	rootCmd.AddCommand(cmdStart)
 }
