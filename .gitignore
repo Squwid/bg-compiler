@@ -1,3 +1,4 @@
 bg-compiler
 vendor/
 dist/
+*.zip

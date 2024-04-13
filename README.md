@@ -45,7 +45,7 @@ Usage:
 | `--timeout` | 30 | Container timeout in seconds. |
 | `--workers` | 4 | Number of concurrent workers. |
 | `--port` | 8080 | Port to run the compiler on. |
-| `--use-gvisor` | false | Use [gVisor](https://gvisor.dev/) for increased container security (requires runsc). |
+| `--gvisor` | false | Use [gVisor](https://gvisor.dev/) for increased container security (requires runsc). |
 
 ### HTTP Calls
 
@@ -158,7 +158,7 @@ curl --request POST \
 	"image": "oven/bun:1.0",
 	"count": 4,
 	"cmd": "bun",
-  "extension": "js"
+	"extension": "js"
 }'
 ```
 
@@ -191,4 +191,40 @@ Output:
 		"timed_out": false
 	}
 ]
+```
+
+## Installation
+
+- Docker is a prerequisite for running the compiler. [Installation instructions](https://docs.docker.com/engine/install/)
+
+### By Source
+
+If installing by source, Go is required to build the compiler.
+[Installation instructions](https://golang.org/doc/install)
+
+Clone the repo
+
+```sh
+git clone https://github.com/Squwid/bg-compiler.git
+```
+
+Install the compiler
+
+```sh
+cd bg-compiler
+go install
+```
+
+```sh
+bg-compiler start
+```
+
+### By Binary
+
+Download the latest release from the [releases page](https://github.com/Squwid/bg-compiler/releases)
+
+Run the binary
+
+```sh
+bg-compiler start
 ```
