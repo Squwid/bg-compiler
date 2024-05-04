@@ -5,6 +5,7 @@ type Submission struct {
 	Image  string  `json:"image"`
 	Count  int     `json:"count"`
 	Input  *string `json:"input"` // Text input to write to a file.
+	StdIn  *string `json:"stdIn"`
 
 	Cmd string `json:"cmd"` // Command to run the script.
 

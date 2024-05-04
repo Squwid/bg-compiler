@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/Squwid/bg-compiler/flags"
 	"github.com/docker/docker/api/types"
@@ -25,6 +26,8 @@ type DockerClient interface {
 	StartContainer(context.Context, string) (io.ReadCloser, error)
 
 	KillContainer(context.Context, string) (bool, error)
+
+	FeedStdIn(ctx context.Context, id, stdIn string) error
 }
 
 type CreateContainerInput struct {
@@ -63,7 +66,8 @@ func Init() {
 	Client = &dclient{docker: c}
 }
 
-func (c *dclient) CreateContainer(ctx context.Context, input *CreateContainerInput) (string, error) {
+func (c *dclient) CreateContainer(ctx context.Context,
+	input *CreateContainerInput) (string, error) {
 	hostConfig := &container.HostConfig{
 		Mounts: input.Mounts,
 		LogConfig: container.LogConfig{
@@ -141,4 +145,26 @@ func (c *dclient) KillContainer(ctx context.Context, id string) (bool, error) {
 		return false, nil
 	}
 	return true, c.docker.ContainerKill(ctx, id, "SIGKILL")
+}
+
+func (c *dclient) FeedStdIn(ctx context.Context, id, stdIn string) error {
+	if !strings.HasSuffix(stdIn, "\n") {
+		stdIn += "\n"
+	}
+
+	resp, err := c.docker.ContainerAttach(ctx, id, types.ContainerAttachOptions{
+		Stream: true,
+		Stdin:  true,
+	})
+	if err != nil {
+		return errors.Wrapf(err, "Error attatching directly to container for StdIn")
+	}
+
+	_, err = resp.Conn.Write([]byte(stdIn))
+	if err != nil {
+		return errors.Wrapf(err, "Error sending stdin to container")
+	}
+
+	resp.Conn.Close()
+	return nil
 }

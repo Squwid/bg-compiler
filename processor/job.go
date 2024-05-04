@@ -55,6 +55,10 @@ func (job *Job) Start() error {
 	}
 	start := time.Now()
 
+	if err := job.MaybeFeedStdIn(); err != nil {
+		job.logger.WithError(err).Errorf("Error feeding StdIn")
+	}
+
 	go job.WaitForContainerExit(ctx)
 
 	job.StdOut, job.StdErr, err = ReadLogOutputs(logs)
@@ -104,4 +108,11 @@ func (job *Job) WaitForContainerExit(ctx context.Context) {
 		job.TimedOut = true
 	}
 	job.done <- struct{}{}
+}
+
+func (job *Job) MaybeFeedStdIn() error {
+	if job.Def.Submission.StdIn == nil {
+		return nil
+	}
+	return docker.Client.FeedStdIn(job.Def.ctx, job.containerID, *job.Def.Submission.StdIn)
 }

@@ -79,7 +79,8 @@ func (d *definition) WriteFiles() error {
 		f.Close()
 	}
 
-	d.hostSourceCodeFile = filepath.Join(d.hostTmpDir, fmt.Sprintf("main.%s", d.Submission.Extension))
+	d.hostSourceCodeFile = filepath.Join(d.hostTmpDir, fmt.Sprintf("main.%s",
+		d.Submission.Extension))
 	f, err := os.Create(d.hostSourceCodeFile)
 	if err != nil {
 		return errors.Wrap(err, "Failed to create source code file")
