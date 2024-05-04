@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/Squwid/bg-compiler/flags"
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
@@ -117,11 +116,11 @@ func (c *dclient) CreateContainer(ctx context.Context,
 // StartContainer starts a container and returns a ReadCloser to the logs.
 // They still need to be multiplexed between stdout and stderr.
 func (c *dclient) StartContainer(ctx context.Context, id string) (io.ReadCloser, error) {
-	if err := c.docker.ContainerStart(ctx, id, types.ContainerStartOptions{}); err != nil {
+	if err := c.docker.ContainerStart(ctx, id, container.StartOptions{}); err != nil {
 		return nil, err
 	}
 
-	logs, err := c.docker.ContainerLogs(context.Background(), id, types.ContainerLogsOptions{
+	logs, err := c.docker.ContainerLogs(context.Background(), id, container.LogsOptions{
 		Timestamps: false,
 		Follow:     true,
 		ShowStdout: true,
@@ -152,7 +151,7 @@ func (c *dclient) FeedStdIn(ctx context.Context, id, stdIn string) error {
 		stdIn += "\n"
 	}
 
-	resp, err := c.docker.ContainerAttach(ctx, id, types.ContainerAttachOptions{
+	resp, err := c.docker.ContainerAttach(ctx, id, container.AttachOptions{
 		Stream: true,
 		Stdin:  true,
 	})
