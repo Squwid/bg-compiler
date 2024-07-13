@@ -109,10 +109,10 @@ and running a simple "Hello, world!" program in Bun.
 #### Step 1: Pull Docker Image
 
 Pull the Docker image that will be used to run the code. In this example we
-will use the `oven/bun:1.0` image to run Javascript using Bun.
+will use the `oven/bun:1` image to run Javascript using Bun.
 
 ```sh
-docker pull oven/bun:1.0
+docker pull oven/bun:1
 ```
 
 #### Step 2: Start the Compiler
@@ -132,7 +132,7 @@ bg-compiler start \
 #### Step 3: Send a Compile Request
 
 Send a compile request to the server. The request will run the code in the
-`oven/bun:1.0` image and print `Hello, world!` to stdout.
+`oven/bun:1` image and print `Hello, world!` to stdout.
 
 Using a [JSON escape tool](https://www.freeformatter.com/json-escape.html#before-output),
 transform the following code from
@@ -155,7 +155,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
 	"script": "console.log(\"Hello, world!\");",
-	"image": "oven/bun:1.0",
+	"image": "oven/bun:1",
 	"count": 4,
 	"cmd": "bun",
 	"extension": "js"
